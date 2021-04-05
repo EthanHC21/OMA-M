@@ -57,24 +57,24 @@ twostepDir = 0;
 maskMode = 'sampledstats';
 
 % show the masks?
-showMask = false;
+showMask = true;
 
 % path for output (must have trailing \)
-outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20176C1\Test Images\Extracted\';
+outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\Extracted\';
 % subfolder for scaled output (for easy review, needs trailing \)
 sclSubfolder = 'scl\';
 
 % path to lights (must have trailing \)
-lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20176C1\Test Images\';
+lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\Actual Fiber\';
 
 % path to plots (must have trailing \)
-plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20176C1\Test Images\plots\';
+plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\plots\';
 
 % we read the defined parameters for the mask region
 
 % specify background mask - the square enclosed by this
-    bgRows = 668:861;
-    bgCols = 61:260;
+    bgRows = 206:696;
+    bgCols = 179:381;
 
 % test image
 % bgRows = 404:1004;
@@ -141,7 +141,7 @@ for i = 1:length(files)
         
         % store location of the crop (for later use)
         % specified as upper left y, upper left x, lower right y, lower right x
-        cropLoc = [floor(height*2/3), 1, height, width];
+        cropLoc = [588, 534, 714, 977];
 %         cropLoc = cropLoc * 2; % correct because these are image relative coordinates
 
         % test image
@@ -156,7 +156,7 @@ for i = 1:length(files)
         
         % store location of the burner in the original image [y, x]
         % use Photoshop or something to get this
-        burnerLoc = [495, 715];
+        burnerLoc = [764, 531];
         
         % modify if we used OMA debayering
         if (strcmp(debayerMode, 'oma'))
@@ -176,6 +176,11 @@ for i = 1:length(files)
         bg_R = lightRGB(bgRows, bgCols, 1);
         bg_G = lightRGB(bgRows, bgCols, 2);
         bg_B = lightRGB(bgRows, bgCols, 3);
+        
+        % remove the skew
+        bg_R = removeSkew(bg_R, .5, floor(.5 * length(bgRows) * length(bgCols)));
+        bg_G = removeSkew(bg_G, .5, floor(.5 * length(bgRows) * length(bgCols)));
+        bg_B = removeSkew(bg_B, .5, floor(.5 * length(bgRows) * length(bgCols)));
         
         % get the averages
         bg_R_avg = mean(bg_R(:));
