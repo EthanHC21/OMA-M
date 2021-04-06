@@ -73,12 +73,8 @@ plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research
 % we read the defined parameters for the mask region
 
 % specify background mask - the square enclosed by this
-    bgRows = 206:696;
-    bgCols = 179:381;
-
-% test image
-% bgRows = 404:1004;
-% bgCols = 32:1332;
+bgRows = 206:696;
+bgCols = 179:381;
 
 % if we're using OMA debayering, we divide the begnining and end by 2
 if (strcmp(debayerMode, 'oma'))
@@ -142,15 +138,11 @@ for i = 1:length(files)
         % store location of the crop (for later use)
         % specified as upper left y, upper left x, lower right y, lower right x
         cropLoc = [588, 534, 714, 977];
-%         cropLoc = cropLoc * 2; % correct because these are image relative coordinates
 
-        % test image
-%         cropLoc = [128, 746, 210, 1042];
-        
         % modify if we used OMA debayering
         if (strcmp(debayerMode, 'oma'))
             
-%             cropLoc = [ceil(cropLoc(1)/2), ceil(cropLoc(2)/2), floor(cropLoc(3)/2), floor(cropLoc(4)/2)];
+             cropLoc = [ceil(cropLoc(1)/2), ceil(cropLoc(2)/2), floor(cropLoc(3)/2), floor(cropLoc(4)/2)];
             
         end
         
