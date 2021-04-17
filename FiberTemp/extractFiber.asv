@@ -165,7 +165,7 @@ for y = 1:height
                 scatter(tempPxls(:, 1), tempPxls(:, 2), 'DisplayName', strcat("Fiber ", num2str(fiberNum)));
                 T = array2table(tempPxls);
                 T.Properties.VariableNames = {'Radius', 'Temperature'};
-                writetable(T, strcat(plotPath, imgName, '.xlsx'))
+                writetable(T, strcat(plotPath, imgName, '.xslx'))
                 
                 % increment fiber number
                 fiberNum = fiberNum + 1;

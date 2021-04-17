@@ -25,11 +25,11 @@ def read_hobj(image_filename):
 
 
 # Path to .hobj images
-imgFolder = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\HOBJ'
+imgFolder = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029G1\HOBJ'
 # Path to save converted .tiff files
-saveDir = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\Tiff'
+saveDir = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029G1\Tiff'
 # Path to save scaled .tiff files
-sclSaveDir = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029B2\Scaled'
+sclSaveDir = r'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029G1\Scaled'
 
 for fileName in os.listdir(imgFolder):
     

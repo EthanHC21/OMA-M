@@ -48,7 +48,7 @@ clear
 close all
 
 % specify debayer mode, either 'matlab', 'oma', 'twostep' or 'none'
-debayerMode = 'twostep';
+debayerMode = 'oma';
 % direction for twostep debayering - 0 is horizontal and 1 is vertical
 twostepDir = 0;
 
@@ -57,10 +57,10 @@ twostepDir = 0;
 maskMode = 'sampledstats';
 
 % show the masks?
-showMask = false;
+showMask = true;
 
 % path for output (must have trailing \)
-outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\long\';
+outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\long';
 % subfolder for scaled output (for easy review, needs trailing \)
 sclSubfolder = 'scl\';
 
@@ -146,6 +146,7 @@ for i = 1:length(files)
         
         % store location of the burner in the original image [y, x]
         % use Photoshop or something to get this
+%         burnerLoc = [531, 764]; B2
         burnerLoc = [499, 721];
         
         % modify if we used OMA debayering
@@ -168,9 +169,9 @@ for i = 1:length(files)
         bg_B = lightRGB(bgRows, bgCols, 3);
         
         % remove the skew
-        bg_R = removeSkew(bg_R, .5, floor(.5 * length(bgRows) * length(bgCols)));
-        bg_G = removeSkew(bg_G, .5, floor(.5 * length(bgRows) * length(bgCols)));
-        bg_B = removeSkew(bg_B, .5, floor(.5 * length(bgRows) * length(bgCols)));
+%         bg_R = removeSkew(bg_R, .5, floor(.5 * length(bgRows) * length(bgCols)));
+%         bg_G = removeSkew(bg_G, .5, floor(.5 * length(bgRows) * length(bgCols)));
+%         bg_B = removeSkew(bg_B, .5, floor(.5 * length(bgRows) * length(bgCols)));
         
         % get the averages
         bg_R_avg = mean(bg_R(:));
