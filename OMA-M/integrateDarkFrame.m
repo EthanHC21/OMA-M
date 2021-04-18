@@ -9,9 +9,10 @@ filesProcessed = 0;
 for k = 1:length(files)
     
     name = files(k).name;
+    dirStat = files(k).isdir;
     
     % remove the . and .. names
-    if (~(convertCharsToStrings(name) == convertCharsToStrings('.') || convertCharsToStrings(name) == convertCharsToStrings('..')))
+    if (~dirStat && (strcmp(name(end-3:end), 'tiff') || strcmp(name(end-2:end), 'tif')))
         
         % increment the number of files processed
         filesProcessed = filesProcessed + 1;

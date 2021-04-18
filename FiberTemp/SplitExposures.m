@@ -2,7 +2,7 @@ close all
 clear
 
 % path to files (must have trailing \)
-imgPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029G1\Actual Fiber\';
+imgPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\';
 imgOut = imgPath;
 
 % subfolders for exposures (must have trailing \)
@@ -50,3 +50,5 @@ for i = 1:length(files)
     end
     
 end
+
+clear

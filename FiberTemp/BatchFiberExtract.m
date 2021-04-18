@@ -59,6 +59,83 @@ maskMode = 'sampledstats';
 % show the masks?
 showMask = false;
 
+% specify dark mode, either 'sampled' or 'frames'
+darkMode = 'frames';
+
+if (strcmp(darkMode, 'frames'))
+    
+    % path to darks (must have trailing \) - ignore if using 'sampled'
+    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\long\';
+    
+    masterDark = integrateDarkFrame(darkPath);
+    
+    % get image size
+    [height, width, ~] = size(masterDark);
+    
+    % store location of the crop (for later use)
+    % specified as upper left y, upper left x, lower right y, lower right x
+    cropLoc = [floor(height * 2/3), 1, height, width];
+    
+    % find bad pixels on the dark frame
+    [bad_R, bad_G, bad_B] = findBadRaw(masterDark, 20);
+    % remove bad pixels
+    masterDarkClean = clearBad(masterDark, bad_R, bad_G, bad_B);
+    
+    if (strcmp(debayerMode, 'matlab') || strcmp(debayerMode, 'oma') || strcmp(debayerMode, 'twostep'))
+        
+        % debayer it and store it as a double
+        if (strcmp(debayerMode, 'oma'))
+            
+            darkRGB = double(doc2rgbOMA(masterDarkClean));
+            cropLoc = [ceil(cropLoc(1)/2), ceil(cropLoc(2)/2), floor(cropLoc(3)/2), floor(cropLoc(4)/2)];
+            
+        elseif (strcmp(debayerMode, 'matlab'))
+            
+            darkRGB = double(demosaic(uint16(masterDarkClean), 'rggb'));
+            
+        else
+            
+            darkRGB = double(twoStepLinear(masterDarkClean, twostepDir));
+            
+        end
+        
+        % get stats of the cropped background frame
+        bgStats = darkRGB(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), :);
+        bg_R = bgStats(:, :, 1);
+        bg_G = bgStats(:, :, 2);
+        bg_B = bgStats(:, :, 3);
+        
+    elseif (strcmp(debayerMode, 'none'))
+        
+        % get the non-debayered light frame as a double
+        darkRGB = double(read(Tiff(strcat(lightPath, name))));
+        
+        % remove skew
+        darkRGB = removeSkew(darkRGB, .5, floor(.5 * height * width));
+        
+    else
+        
+        disp('Invalid debayer mode')
+        return
+        
+    end
+    
+    if (~strcmp(debayerMode, 'none'))
+        
+        % remove skew
+        bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        
+        % calculate standard deviation
+        bg_R_std = std(bg_R(:));
+        bg_G_std = std(bg_G(:));
+        bg_B_std = std(bg_B(:));
+        
+    end
+    
+end
+
 % path for output (must have trailing \)
 outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\long\';
 % subfolder for scaled output (for easy review, needs trailing \)
@@ -70,14 +147,17 @@ lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Researc
 % path to plots (must have trailing \)
 plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Plots\long\';
 
-% specify background mask - the square enclosed by this
-bgRows = 806:972;
-bgCols = 109:390;
-
-% if we're using OMA debayering, we divide the begnining and end by 2
-if (strcmp(debayerMode, 'oma'))
-    bgRows = (ceil(bgRows(1)/2)):(floor(bgRows(end)/2));
-    bgCols = (ceil(bgCols(1)/2)):(floor(bgCols(end)/2));
+if (strcmp(darkMode, 'sampled'))
+    % specify background mask - the square enclosed by this
+    bgRows = 806:972;
+    bgCols = 109:390;
+    
+    % if we're using OMA debayering, we divide the begnining and end by 2
+    if (strcmp(debayerMode, 'oma'))
+        bgRows = (ceil(bgRows(1)/2)):(floor(bgRows(end)/2));
+        bgCols = (ceil(bgCols(1)/2)):(floor(bgCols(end)/2));
+    end
+    
 end
 
 % load info about light files
@@ -96,12 +176,32 @@ for i = 1:length(files)
             % get the light frame as a double
             lightRaw = double(read(Tiff(strcat(lightPath, name))));
             
-            % find the bad pixels on the light frame
-            % this can be very aggressive at low threshold values - be warned
-            [bad_R_L, bad_G_L, bad_B_L] = findBadRaw(lightRaw, 80);
+            if (strcmp(darkMode, 'sampled'))
+                
+                % get image size
+                [height, width] = size(lightRaw);
+                
+                % save crop location
+                cropLoc = [floor(height * 2/3), 1, height, width];
+                
+                if (strcmp(debayerMode, 'oma'))
+                    
+                    % recalc crop due to smaller size
+                    cropLoc = [ceil(cropLoc(1)/2), ceil(cropLoc(2)/2), floor(cropLoc(3)/2), floor(cropLoc(4)/2)];
+                    % reset image dimensions
+                    height = height/2;
+                    width = width/2;
+                    
+                end
+                
+                % find the bad pixels on the light frame
+                % this can be very aggressive at low threshold values - be warned
+                [bad_R, bad_G, bad_B] = findBadRaw(lightRaw, 80);
+                
+            end
             
             % remove its bad pixels (from dark frame and from itself)
-            lightRawClean = clearBad(lightRaw, bad_R_L, bad_G_L, bad_B_L);
+            lightRawClean = clearBad(lightRaw, bad_R, bad_G, bad_B);
             
             % debayer it and store it as a double
             if (strcmp(debayerMode, 'oma'))
@@ -120,27 +220,13 @@ for i = 1:length(files)
             
         elseif (strcmp(debayerMode, 'none'))
             
-            % get the debayered light frame as a double
+            % get the non-debayered light frame as a double
             lightRGB = double(read(Tiff(strcat(lightPath, name))));
             
         else
             
             disp('Invalid debayer mode')
             return
-            
-        end
-        
-        % get image size
-        [height, width, ~] = size(lightRGB);
-        
-        % store location of the crop (for later use)
-        % specified as upper left y, upper left x, lower right y, lower right x
-        cropLoc = [floor(height * 2/3), 1, height, width];
-
-        % modify if we used OMA debayering
-        if (strcmp(debayerMode, 'oma'))
-            
-%              cropLoc = [ceil(cropLoc(1)/2), ceil(cropLoc(2)/2), floor(cropLoc(3)/2), floor(cropLoc(4)/2)];
             
         end
         
@@ -157,44 +243,82 @@ for i = 1:length(files)
         
         % background subtraction
         
-        % extract channels
-        lightR = lightRGB(:, :, 1);
-        lightG = lightRGB(:, :, 2);
-        lightB = lightRGB(:, :, 3);
+        if (~strcmp(debayerMode, 'none'))
+            
+            % extract channels
+            lightR = lightRGB(:, :, 1);
+            lightG = lightRGB(:, :, 2);
+            lightB = lightRGB(:, :, 3);
+            
+            
+            if (strcmp(darkMode, 'sampled'))
+                
+                % extract background channels
+                bg_R = lightRGB(bgRows, bgCols, 1);
+                bg_G = lightRGB(bgRows, bgCols, 2);
+                bg_B = lightRGB(bgRows, bgCols, 3);
+                
+                % remove the skew
+                bg_R = removeSkew(bg_R, .5, floor(.5 * length(bgRows) * length(bgCols)));
+                bg_G = removeSkew(bg_G, .5, floor(.5 * length(bgRows) * length(bgCols)));
+                bg_B = removeSkew(bg_B, .5, floor(.5 * length(bgRows) * length(bgCols)));
+                
+                % get the averages
+                bg_R_avg = mean(bg_R(:));
+                bg_G_avg = mean(bg_G(:));
+                bg_B_avg = mean(bg_B(:));
+                
+                % get the standard deviations (for later)
+                bg_R_std = std(bg_R(:));
+                bg_G_std = std(bg_G(:));
+                bg_B_std = std(bg_B(:));
+                
+                % dark subtraction
+                lightRSub = lightR - bg_R_avg;
+                lightGSub = lightG - bg_G_avg;
+                lightBSub = lightB - bg_B_avg;
+                
+                % construct subtracted image
+                lightRGBSub = zeros(height, width, 3);
+                lightRGBSub(:, :, 1) = lightRSub;
+                lightRGBSub(:, :, 2) = lightGSub;
+                lightRGBSub(:, :, 3) = lightBSub;
+                
+                % subtract b from r
+                lightBW = lightRSub - lightBSub;
+                
+            elseif (strcmp(darkMode, 'frames'))
+                
+                lightRSub = lightR - darkRGB(:, :, 1);
+                lightGSub = lightG - darkRGB(:, :, 2);
+                lightBSub = lightB - darkRGB(:, :, 3);
+                
+                % subtract b from r
+                lightBW = lightRSub - lightBSub;
+                
+            else
+                
+                disp('Invalid dark mode')
+                
+            end
+            
+        else
+            
+            if (strcmp(darkMode, 'sampled'))
+                
+                bg = lightRGB(bgRows, bgCols);
+                
+                bg_avg = mean(bg(:));
+                
+                lightBW = lightRGB - bg_avg;
+                
+            else
+                
+                lightBW = lightRGB - darkRGB;
+                
+            end
         
-        % extract background channels
-        bg_R = lightRGB(bgRows, bgCols, 1);
-        bg_G = lightRGB(bgRows, bgCols, 2);
-        bg_B = lightRGB(bgRows, bgCols, 3);
-        
-        % remove the skew
-        bg_R = removeSkew(bg_R, .5, floor(.5 * length(bgRows) * length(bgCols)));
-        bg_G = removeSkew(bg_G, .5, floor(.5 * length(bgRows) * length(bgCols)));
-        bg_B = removeSkew(bg_B, .5, floor(.5 * length(bgRows) * length(bgCols)));
-        
-        % get the averages
-        bg_R_avg = mean(bg_R(:));
-        bg_G_avg = mean(bg_G(:));
-        bg_B_avg = mean(bg_B(:));
-        
-        % get the standard deviations (for later)
-        bg_R_std = std(bg_R(:));
-        bg_G_std = std(bg_G(:));
-        bg_B_std = std(bg_B(:));
-        
-        % dark subtraction
-        lightRSub = lightR - bg_R_avg;
-        lightGSub = lightG - bg_G_avg;
-        lightBSub = lightB - bg_B_avg;
-        
-        % construct subtracted image
-        lightRGBSub = zeros(height, width, 3);
-        lightRGBSub(:, :, 1) = lightRSub;
-        lightRGBSub(:, :, 2) = lightGSub;
-        lightRGBSub(:, :, 3) = lightBSub;
-        
-        % subtract b from r
-        lightBW = lightRSub - lightBSub;
+        end
         
         % truncate to 0
         lightBW(lightBW<0) = 0;
