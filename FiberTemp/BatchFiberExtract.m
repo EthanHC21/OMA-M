@@ -60,7 +60,7 @@ maskMode = 'sampledstats';
 showMask = false;
 
 % specify dark mode, either 'sampled' or 'frames'
-darkMode = 'frames';
+darkMode = 'sampled';
 
 if (strcmp(darkMode, 'frames'))
     
@@ -279,10 +279,10 @@ for i = 1:length(files)
                 lightBSub = lightB - bg_B_avg;
                 
                 % construct subtracted image
-                lightRGBSub = zeros(height, width, 3);
-                lightRGBSub(:, :, 1) = lightRSub;
-                lightRGBSub(:, :, 2) = lightGSub;
-                lightRGBSub(:, :, 3) = lightBSub;
+                lightRGBCropped = zeros(height, width, 3);
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 1) = lightRSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 2) = lightGSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 3) = lightBSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
                 
                 % subtract b from r
                 lightBW = lightRSub - lightBSub;
@@ -295,6 +295,14 @@ for i = 1:length(files)
                 
                 % subtract b from r
                 lightBW = lightRSub - lightBSub;
+                
+                % crop the image
+                lightRGBCropped = zeros(height, width, 3);
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 1) = lightRSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 2) = lightGSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
+                lightRGBCropped(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4), 3) = lightBSub(cropLoc(1):cropLoc(3), cropLoc(2):cropLoc(4));
+                % truncate at 0
+                lightRGBCropped(lightRGBCropped < 0) = 0;
                 
             else
                 
@@ -360,7 +368,7 @@ for i = 1:length(files)
             end
             
             % output the fibers
-            extractFiber(lightRGBSub, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
+            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
             
         elseif (strcmp(maskMode, 'sampledstats'))
             
@@ -387,7 +395,7 @@ for i = 1:length(files)
             end
             
             % output the fibers
-            extractFiber(lightRGB, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
+            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
             
         else
             

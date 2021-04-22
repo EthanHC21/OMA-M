@@ -94,7 +94,7 @@ for y = 1:height
         
         % check thickness of fiber (must be greater than some arbitrary
         % number of pixels
-        if (fiberRowEnd - fiberRowStart > 3)
+        if (fiberRowEnd - fiberRowStart > 2)
             
             % if we're using 'lum' mask mode, we need to generate a
             % vertical mask to extract the columns
