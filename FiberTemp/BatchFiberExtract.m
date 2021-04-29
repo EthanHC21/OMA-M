@@ -60,12 +60,12 @@ maskMode = 'sampledstats';
 showMask = false;
 
 % specify dark mode, either 'sampled' or 'frames'
-darkMode = 'sampled';
+darkMode = 'frames';
 
 if (strcmp(darkMode, 'frames'))
     
     % path to darks (must have trailing \) - ignore if using 'sampled'
-    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\long\';
+    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Weekly Updates\2021-04-29\Darks\med\';
     
     masterDark = integrateDarkFrame(darkPath);
     
@@ -137,15 +137,15 @@ if (strcmp(darkMode, 'frames'))
 end
 
 % path for output (must have trailing \)
-outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\long\';
+outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Weekly Updates\2021-04-29\Test Fibers\Extracted\';
 % subfolder for scaled output (for easy review, needs trailing \)
 sclSubfolder = 'scl\';
 
 % path to lights (must have trailing \)
-lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Actual Fiber\long\';
+lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Weekly Updates\2021-04-29\Test Fibers\med\';
 
 % path to plots (must have trailing \)
-plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Plots\long\';
+plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Weekly Updates\2021-04-29\Plots\';
 
 if (strcmp(darkMode, 'sampled'))
     % specify background mask - the square enclosed by this
@@ -374,7 +374,7 @@ for i = 1:length(files)
             
             % define crtitical p value for pixels above which will be
             % considered a fiber detection
-            p_crit = 10;
+            p_crit = 5;
             
             % get array of pixel z-scores
             zArr = lightBW/bg_BW_std;
@@ -407,3 +407,7 @@ for i = 1:length(files)
     end
 
 end
+
+% make it ding
+[y, Fs] = audioread('ding.wav');
+sound(y/4, Fs);

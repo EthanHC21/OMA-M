@@ -190,6 +190,6 @@ legend('show')
 
 if (outputPlot)
     
-    saveas(gcf, strcat(plotPath, imgName, '.png'));
+    saveas(gcf, strcat(plotPath, imgName, '.fig'));
     
 end

@@ -30,7 +30,7 @@ if (strcmp(generateMask, 'oma')) % this replicates the OMA mask generation
     maskHoriz = maskHoriz/max(maskHoriz(:));
     
     % binarize the mask
-    maskHoriz = maskOMA(maskHoriz, .2);
+    maskHoriz = maskOMA(maskHoriz, ..7);
     
     % smooth it in y to include more of the fiber's light
     maskHoriz = smoothOMA(maskHoriz, 0, smoothY);
