@@ -374,7 +374,7 @@ for i = 1:length(files)
             
             % define crtitical p value for pixels above which will be
             % considered a fiber detection
-            p_crit = 5;
+            p_crit = 2;
             
             % get array of pixel z-scores
             zArr = lightBW/bg_BW_std;
