@@ -20,7 +20,7 @@ if (strcmp(generateMask, 'oma')) % this replicates the OMA mask generation
     % make horizontal mask
     
     % clip at 50% of max brightness in red
-    maskHoriz = clipfbOMA(r, .85);
+    maskHoriz = clipfbOMA(r, .5);
     
     % normalize to [0, 1]
     maskHoriz = maskHoriz - min(maskHoriz(:));
