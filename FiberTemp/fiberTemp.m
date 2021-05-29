@@ -1,4 +1,4 @@
-function tempPxls = fiberTemp(fiberImg, fiberStart, burnerLoc)
+function tempPxls = fiberTemp(fiberImg, fiberStart, burnerLoc, pxlScl)
 % store whether we generate masks here or we assume the mask is already
 % generated. if this is false, the image is assumed to be 0 at all points
 % except the fiber (no corrections are done at all)
@@ -138,7 +138,7 @@ radius = sqrt((Y - burnerLoc(1)).^2 + (X - burnerLoc(2)).^2);
 
 % store the pixel coords and temperature as a matrix with columns
 % [radius, temperature]
-tempPxls = [transpose(radius), transpose(fiberTemp)];
+tempPxls = [transpose(radius) * pxlScl, transpose(fiberTemp)];
 
 % sort the array
 [~, I] = sort(tempPxls(:, 1));

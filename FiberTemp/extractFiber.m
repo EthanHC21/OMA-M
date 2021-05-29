@@ -1,4 +1,4 @@
-function [] = extractFiber(colorImg, mask, burnerLoc, saveDir, imgName, sclSubfolder, maskMode, plotPath)
+function [] = extractFiber(colorImg, mask, burnerLoc, saveDir, imgName, sclSubfolder, maskMode, plotPath, pxlScl, plotAxes, manualFibers)
 
 % store whether to output the plots
 outputPlot = true;
@@ -16,9 +16,10 @@ fiberNum = 1;
 
 % make a figure to plot
 figure()
-xlabel('Radius from Burner [Pixels]')
+xlabel('Radius from Burner [mm]')
 ylabel('Temperature [K]')
-title(imgName, 'Interpreter', 'none');
+title(imgName, 'Interpreter', 'none')
+axis(plotAxes)
 hold on
 
 [height, width] = size(mask);
@@ -160,12 +161,12 @@ for y = 1:height
                 end
                 
                 % run the temperature analysis
-                tempPxls = fiberTemp(fiber, [fiberRowStart, fiberColStart], burnerLoc);
+                tempPxls = fiberTemp(fiber, [fiberRowStart, fiberColStart], burnerLoc, pxlScl);
                 % plot it
                 scatter(tempPxls(:, 1), tempPxls(:, 2), 'DisplayName', strcat("Fiber ", num2str(fiberNum)));
                 T = array2table(tempPxls);
-                T.Properties.VariableNames = {'Radius', 'Temperature'};
-                writetable(T, strcat(plotPath, imgName, '.xlsx'))
+                T.Properties.VariableNames = {'Radius [mm]', 'Temperature'};
+                writetable(T, strcat(plotPath, strcat(imgName, "_f", num2str(fiberNum)), '.xlsx'))
                 
                 % increment fiber number
                 fiberNum = fiberNum + 1;
@@ -186,10 +187,32 @@ if (outputBox)
     imwrite(uint16(boxImg * (2^16-1)/(2^12 - 1)), strcat(saveDir, boxPathSubfolder, imgName, '.tiff'))
 end
 
+manualFiberNum = 1;
+% process manually specified fibers
+[numManual, ~] = size(manualFibers);
+for i = 1:numManual
+    
+    % extract the manual fiber
+    fiber = colorImg(manualFibers(1):manualFibers(3), manualFibers(2):manualFibers(4), :);
+    
+    % run the temperature analysis
+    tempPxls = fiberTemp(fiber, [manualFibers(1), manualFibers(2)], burnerLoc, pxlScl);
+    % plot it
+    scatter(tempPxls(:, 1), tempPxls(:, 2), 'DisplayName', strcat("Manual Fiber ", num2str(manualFiberNum)));
+    T = array2table(tempPxls);
+    T.Properties.VariableNames = {'Radius [mm]', 'Temperature'};
+    writetable(T, strcat(plotPath, strcat(imgName, "_mf", num2str(manualFiberNum)), '.xlsx'))
+    
+    % increment fiber number
+    manualFiberNum = manualFiberNum + 1;
+    
+end
+
+
 legend('show')
 
 if (outputPlot)
     
-    saveas(gcf, strcat(plotPath, imgName, '.fig'));
+    saveas(gcf, strcat(plotPath, imgName, '.png'));
     
 end

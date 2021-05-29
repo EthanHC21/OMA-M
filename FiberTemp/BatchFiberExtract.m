@@ -47,6 +47,9 @@
 clear
 close all
 
+% specify plot axis limits ([xmin, xmax, ymin, ymax])
+plotAxes = [15 22 1100 1500];
+
 % specify debayer mode, either 'matlab', 'oma', 'twostep' or 'none'
 debayerMode = 'twostep';
 % direction for twostep debayering - 0 is horizontal and 1 is vertical
@@ -61,6 +64,14 @@ showMask = false;
 
 % specify dark mode, either 'sampled' or 'frames'
 darkMode = 'frames';
+
+% manual fibers - n-by-2 cell array containing the image name (without file
+% extension, so "eximg.tiff" is "eximg" and an m-by-4 array with the fiber
+% bounding box coordinates as follows [up_y, up_x, low_y, low_x]
+manualFibers = {"med", [753, 656, 804, 890]};
+
+% specify clipping threshold above which pixels are considered clipped
+clipThresh = 4000;
 
 if (strcmp(darkMode, 'frames'))
     
@@ -123,9 +134,12 @@ if (strcmp(darkMode, 'frames'))
     if (~strcmp(debayerMode, 'none'))
         
         % remove skew
-        bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-        bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-        bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        %bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        %bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        %bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+        bg_R = bg_R(:);
+        bg_G = bg_G(:);
+        bg_B = bg_B(:);
         
         % calculate standard deviation
         bg_R_std = std(bg_R(:));
@@ -232,12 +246,31 @@ for i = 1:length(files)
         
         % store location of the burner in the original image [y, x]
         % use Photoshop or something to get this
-        burnerLoc = [499, 721];
+        burnerLoc = [536, 758];
+        % store size of the burner in pixels (assume circle)
+        % again, use Photoshop or something to get this
+        burnerSize = 78;
+        pxlScl = 6.35/burnerSize; % in mm/pxl, burner is 6.35mm in diameter
+        
+        % get the manual fibers for this image
+        imgManualFibers = [];
+        [numManualImages, ~]= size(manualFibers);
+        for j = 1:numManualImages
+            
+            if (strcmp(manualFibers{j, 1}, name(1:end-5)))
+                imgManualFibers = manualFibers{j, 2};
+                break;
+            end
+            
+        end
         
         % modify if we used OMA debayering
         if (strcmp(debayerMode, 'oma'))
             
             burnerLoc = burnerLoc/2;
+            pxlScl = pxlScl/2;
+            imgManualFibers = floor(imgManualFibers/2);
+            
             
         end
         
@@ -250,6 +283,17 @@ for i = 1:length(files)
             lightG = lightRGB(:, :, 2);
             lightB = lightRGB(:, :, 3);
             
+            % check for clipped pixels in each channel
+            clippedR = lightR >= clipThresh;
+            clippedG = lightG >= clipThresh;
+            clippedB = lightB >= clipThresh;
+            % generate clipped rejection map
+            clipped = logical(clippedR + clippedG + clippedB);
+            % if any channel has a pixel clipped, we remove that location
+            % from all channels
+            lightR(clipped) = 0;
+            lightG(clipped) = 0;
+            lightB(clipped) = 0;
             
             if (strcmp(darkMode, 'sampled'))
                 
@@ -368,13 +412,13 @@ for i = 1:length(files)
             end
             
             % output the fibers
-            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
+            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath, pxlScl, plotAxes, imgManualFibers);
             
         elseif (strcmp(maskMode, 'sampledstats'))
             
             % define crtitical p value for pixels above which will be
             % considered a fiber detection
-            p_crit = 2;
+            p_crit = 8;
             
             % get array of pixel z-scores
             zArr = lightBW/bg_BW_std;
@@ -395,7 +439,7 @@ for i = 1:length(files)
             end
             
             % output the fibers
-            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath);
+            extractFiber(lightRGBCropped, maskSmooth, burnerLoc, outPath, name(1:end-5), sclSubfolder, maskMode, plotPath, pxlScl, plotAxes, imgManualFibers);
             
         else
             
@@ -408,6 +452,7 @@ for i = 1:length(files)
 
 end
 
-% make it ding
+
+% make it ding like a toaster
 [y, Fs] = audioread('ding.wav');
 sound(y/4, Fs);
