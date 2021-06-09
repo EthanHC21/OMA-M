@@ -156,7 +156,7 @@ outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\
 sclSubfolder = 'scl\';
 
 % path to lights (must have trailing \)
-lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Actual Fiber\long\';
+lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Actual Fiber\med\';
 
 % path to plots (must have trailing \)
 plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Plots\';

@@ -6,9 +6,6 @@ outputPlot = true;
 % store whether to output images
 outputImg = true;
 
-% store whether to output combined images (plot and tiff)
-combineImages = true;
-
 % store whether to output the boxed fibers
 outputBox = false;
 if (outputBox)
@@ -219,8 +216,8 @@ legend('show')
 
 if (outputPlot)
     
-    set(gcf, 'Position', [0 0 1360 1024]);
-    print(strcat(plotPath, imgName, '.png'), '-dpng');
+    set(gcf, 'PaperUnits', 'inches', 'PaperPosition', [0 0 85 64]);
+    print(strcat(plotPath, imgName), '-dpng', '-r16');
     
 end
 
@@ -232,12 +229,7 @@ end
 
 if (combineImages)
     
-    combImgOut = uint16(zeros(height, width*2, 3));
-    combPlot = double(imread(strcat(plotPath, imgName, '.png')));
-    combPlot = uint16(combPlot/255*(2^16-1));
-    combPlot = imresize(combPlot, [height width]);
-    combImgOut(1:height, 1:width, :) = combPlot;
-    combImgOut(1:height, (width+1):(2*width), :) = uint16(colorImg * (2^16-1)/max(colorImg(:)));
-    imwrite(combImgOut, strcat(plotPath, 'combined_', imgName, '.tiff'))
+    set(gcf, 'PaperUnits', 'inches', 'PaperPosition', [0 0 85 64]);
+    exportgraphics(gcf, 'test.png', 'Resolution', 64);
     
 end

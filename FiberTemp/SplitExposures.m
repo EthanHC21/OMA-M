@@ -2,7 +2,7 @@ close all
 clear
 
 % path to files (must have trailing \)
-imgPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\';
+imgPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029K1\Actual Fiber\';
 imgOut = imgPath;
 
 % subfolders for exposures (must have trailing \)

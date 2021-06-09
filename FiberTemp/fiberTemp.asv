@@ -88,8 +88,6 @@ elseif (strcmp(generateMask, 'stats'))
     maskHoriz = maskHoriz - min(maskHoriz(:));
     maskHoriz = maskHoriz/max(maskHoriz(:));
     maskHoriz = smoothOMA(maskHoriz, smoothX, smoothY);
-    maskHoriz = intfillOMA(maskHoriz, 0);
-    maskHoriz = maskOMA(maskHoriz, .2);
     
     % smooth the channels
     r = smoothOMA(r, smoothX, 0);
