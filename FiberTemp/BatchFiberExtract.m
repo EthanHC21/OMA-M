@@ -71,12 +71,12 @@ darkMode = 'frames';
 manualFibers = {};
 
 % specify clipping threshold above which pixels are considered clipped
-clipThresh = 4000;
+clipThresh = 3404;
 
 if (strcmp(darkMode, 'frames'))
     
     % path to darks (must have trailing \) - ignore if using 'sampled'
-    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Darks\long\';
+    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\short\';
     
     masterDark = integrateDarkFrame(darkPath);
     
@@ -151,15 +151,15 @@ if (strcmp(darkMode, 'frames'))
 end
 
 % path for fiber output (must have trailing \)
-outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Extracted\';
+outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\';
 % subfolder for scaled output (for easy review, needs trailing \)
 sclSubfolder = 'scl\';
 
 % path to lights (must have trailing \)
-lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Actual Fiber\long\';
+lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Actual Fiber\short\';
 
 % path to plots (must have trailing \)
-plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029J1\Plots\';
+plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Plots\';
 
 if (strcmp(darkMode, 'sampled'))
     % specify background mask - the square enclosed by this
@@ -210,7 +210,7 @@ for i = 1:length(files)
                 
                 % find the bad pixels on the light frame
                 % this can be very aggressive at low threshold values - be warned
-                [bad_R, bad_G, bad_B] = findBadRaw(lightRaw, 80);
+                [bad_R, bad_G, bad_B] = findBadRaw(lightRaw, 40);
                 
             end
             

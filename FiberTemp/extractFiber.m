@@ -21,7 +21,7 @@ boxPathSubfolder = 'boxed\';
 fiberNum = 1;
 
 % make a figure to plot
-figure()
+figure('DefaultAxesFontSize', 18)
 xlabel('Radius from Burner [mm]')
 ylabel('Temperature [K]')
 title(imgName, 'Interpreter', 'none')
@@ -169,7 +169,7 @@ for y = 1:height
                 % run the temperature analysis
                 tempPxls = fiberTemp(fiber, [fiberRowStart, fiberColStart], burnerLoc, pxlScl);
                 % plot it
-                scatter(tempPxls(:, 1), tempPxls(:, 2), 'DisplayName', strcat("Fiber ", num2str(fiberNum)));
+                scatter(tempPxls(:, 1), tempPxls(:, 2), 100, 'DisplayName', strcat("Fiber ", num2str(fiberNum)));
                 T = array2table(tempPxls);
                 T.Properties.VariableNames = {'Radius [mm]', 'Temperature'};
                 writetable(T, strcat(plotPath, strcat(imgName, "_f", num2str(fiberNum)), '.xlsx'))
