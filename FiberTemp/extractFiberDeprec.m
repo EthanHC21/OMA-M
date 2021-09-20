@@ -12,8 +12,7 @@ combineImages = true;
 % store whether to output the boxed fibers
 outputBox = true;
 if (outputBox)
-    boxImg = colorImg - min(colorImg(:));
-    boxImg = uint16(boxImg * (2^16-1)/max(boxImg(:)));
+    boxImg = colorImg;
 end
 % subfolder to store the boxes (must have trailing \)
 boxPathSubfolder = 'boxed\';
@@ -123,10 +122,10 @@ for y = 1:height
                 if (outputBox)
                     
                     % make a white box on the image of the extracted fiber
-                    boxImg(fiberRowStart - 1, (fiberColStart - 1):(fiberColEnd + 1), :) = (2^16 - 1);
-                    boxImg(fiberRowEnd + 1, (fiberColStart - 1):(fiberColEnd + 1), :) = (2^16 - 1);
-                    boxImg((fiberRowStart - 1):(fiberRowEnd + 1), fiberColStart -  1, :) = (2^16 - 1);
-                    boxImg((fiberRowStart - 1):(fiberRowEnd + 1), fiberColEnd +  1, :) = (2^16 - 1);
+                    boxImg(fiberRowStart - 1, (fiberColStart - 1):(fiberColEnd + 1), :) = (2^12 - 1);
+                    boxImg(fiberRowEnd + 1, (fiberColStart - 1):(fiberColEnd + 1), :) = (2^12 - 1);
+                    boxImg((fiberRowStart - 1):(fiberRowEnd + 1), fiberColStart -  1, :) = (2^12 - 1);
+                    boxImg((fiberRowStart - 1):(fiberRowEnd + 1), fiberColEnd +  1, :) = (2^12 - 1);
                     
                 end
                 
@@ -153,7 +152,8 @@ for y = 1:height
 end
 
 if (outputBox)
-    imwrite(boxImg, strcat(saveDir, boxPathSubfolder, imgName, '.tiff'))
+    % factor of max of 4095
+    imwrite(uint16(boxImg * (2^16-1)/(2^12 - 1)), strcat(saveDir, boxPathSubfolder, imgName, '.tiff'))
 end
 
 manualFiberNum = 1;

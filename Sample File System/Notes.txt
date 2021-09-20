@@ -1,0 +1,12 @@
+- Specify a folder for data and an output (called "Upload" in this example) in BatchCaseProcess.m
+- The data folder contains folders for each day of cases (Ex: 20029, 20030, etc.) denoted as [DayFolder#] in this example.
+- Each day folder contains a folder for each case (Ex: A1, D1, F1, etc.) denoted as [Case#] in this example.
+	- Each case folder must have a subfolder named "Tiff" in which the unscaled, converted .hobj files are placed.
+- Each day folder also must contain a file called "Case Data.xlsx" which specifies various parameters for the case.
+	- CaseID must match the case's folder name exactly.
+	- Ignition is the short frame on which you would like analysis to begin.
+	- Darks is the short frame on which the case's dark frames begin.
+	- BurnerLoc specifies the location of the burner in pixels (y, x)
+	- TwoStepDir specifies the direction for TwoStep debayering. 0 for horizontal fibers, 1 for vertical fibers.
+	- CropLoc specifies a box of interest where the fiber analysis will take place specified as (start row, start col, end row, end col)
+	- BurnerSize specifies the size (diameter) of the burner in pixels.

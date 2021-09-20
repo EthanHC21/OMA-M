@@ -71,12 +71,13 @@ darkMode = 'frames';
 manualFibers = {};
 
 % specify clipping threshold above which pixels are considered clipped
-clipThresh = 3404;
+% clipThresh = 3404;
+clipThresh = 4096;
 
 if (strcmp(darkMode, 'frames'))
     
     % path to darks (must have trailing \) - ignore if using 'sampled'
-    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\short\';
+    darkPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Darks\long\';
     
     masterDark = integrateDarkFrame(darkPath);
     
@@ -134,9 +135,9 @@ if (strcmp(darkMode, 'frames'))
     if (~strcmp(debayerMode, 'none'))
         
         % remove skew
-        bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-        bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-        bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+%         bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+%         bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+%         bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
         bg_R = bg_R(:);
         bg_G = bg_G(:);
         bg_B = bg_B(:);
@@ -151,15 +152,18 @@ if (strcmp(darkMode, 'frames'))
 end
 
 % path for fiber output (must have trailing \)
-outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\';
+% outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Extracted\';
+outPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\Test\Extracted\';
 % subfolder for scaled output (for easy review, needs trailing \)
 sclSubfolder = 'scl\';
 
 % path to lights (must have trailing \)
-lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Actual Fiber\short\';
+% lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Actual Fiber\long\';
+lightPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\Test\';
 
 % path to plots (must have trailing \)
-plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Plots\';
+% plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\20029A1\Plots\';
+plotPath = 'D:\Documents\School Documents\2020-2021 Senior Year College\Research\Data\Test\Plots\';
 
 if (strcmp(darkMode, 'sampled'))
     % specify background mask - the square enclosed by this
