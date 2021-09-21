@@ -32,9 +32,9 @@ bg_R = bgStats(:, :, 1);
 bg_B = bgStats(:, :, 3);
 
 % remove skew
-% bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-% % bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
-% bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+bg_R = removeSkew(bg_R, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+% bg_G = removeSkew(bg_G, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
+bg_B = removeSkew(bg_B, .5, floor(.5 * (cropLoc(3)-cropLoc(1)) * (cropLoc(4) - cropLoc(2))));
 bg_R = bg_R(:);
 % bg_G = bg_G(:);
 bg_B = bg_B(:);
